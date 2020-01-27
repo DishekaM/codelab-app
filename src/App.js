@@ -1,6 +1,8 @@
 import React from 'react';
 import logo from './logo.svg';
 import './App.css';
+import TextInput from './TextInput.js';
+import TextField from './TextField.js';
 
 function App() {
   return (
@@ -16,8 +18,10 @@ function App() {
           target="_blank"
           rel="noopener noreferrer"
         >
-          Learn React by Disheka Moore
+          Tech Exchange React Component by Disheka Moore
         </a>
+        <TextInput promptText="Name?"/>
+        <TextField/>
       </header>
     </div>
   );
