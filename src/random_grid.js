@@ -14,7 +14,7 @@ export function RandomGrid() {
   for (let row = 0; row < SIZE; row++) {
     grid[row] = [];
     for (let col = 0; col < SIZE; ++col) {
-      grid[row][col] = chars[SIZE * row + col];
+      grid[row][col] = chars[SIZE * row + col].toLowerCase();
       if (grid[row][col] === "Q") grid[row][col] = "Qu";
     }
   }

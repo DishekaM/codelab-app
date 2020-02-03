@@ -1,102 +1,66 @@
-/** Sources: https://material-ui.com/ */
-
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import findAllSolutions from './solver.js';
+import Board from './Board.js';
+import GuessInput from './GuessInput.js';
+import FoundSolutions from './FoundSolutions.js';
+import ToggleGameState from './ToggleGameState.js';
 import './App.css';
-import {RandomGrid} from './BoilerPlate.js';
-import NestedGrid from './BoggleGrid.js';
-import Button from '@material-ui/core/Button';
-import ButtonGroup from '@material-ui/core/ButtonGroup';
-//import { ReactComponent as Logo } from './logo2.svg';
-import Logo from './logo2.svg';
-import TextField from '@material-ui/core/TextField';
-import { makeStyles } from '@material-ui/core/styles';
-
-function DisplayWords(){
-  
-}
+import {GAME_STATE} from './game_state_enum.js';
+import {RandomGrid} from './random_grid.js';
 
 
-const useStyles = makeStyles(theme => ({
-  root: {
-    '& .MuiTextField-root': {
-      margin: theme.spacing(1),
-      width: 200,
-    },
-  },
-}));
 
+function App() {
 
-function FormPropsTextFields() {
-  const classes = useStyles();
+  const [allSolutions, setAllSolutions] = useState([]);
+  const [foundSolutions, setFoundSolutions] = useState([]);
+  const [gameState, setGameState] = useState(GAME_STATE.BEFORE);
+  const [grid, setGrid] = useState([]);
+
+  // useEffect will trigger when the array items in the second argument are
+  // updated so whenever grid is updated, we will recompute the solutions
+  useEffect(() => {
+    const wordList = require('./full-wordlist.json');
+    let tmpAllSolutions = findAllSolutions(grid, wordList.words);
+    setAllSolutions(tmpAllSolutions);
+  }, [grid]);
+
+  // This will run when gameState changes.
+  // When a new game is started, generate a new random grid and reset solutions
+  useEffect(() => {
+    if (gameState === GAME_STATE.IN_PROGRESS) {
+      setGrid(RandomGrid());
+      setFoundSolutions([]);
+    }
+  }, [gameState]);
+
+  function correctAnswerFound(answer) {
+    console.log("New correct answer:" + answer);
+    setFoundSolutions([...foundSolutions, answer]);
+  }
 
   return (
-    <form className={classes.root} noValidate autoComplete="off">
-      <div>
-        <TextField required id="standard-required" label="Enter possible solutions..." multiline />
-      </div>
-      <ButtonGroup size="large" aria-label="large outlined primary button group"></ButtonGroup>
-      <Button onClick = {DisplayWords()}>End Game</Button>
-      <ButtonGroup/>
-      </form>
-        
-  )}
-
-
-
-var grid_random = RandomGrid()
-console.log(grid_random)
-
-//Grid is not displayed until user clicks start
-//If false, show grid
-
-function ShowGrid(props){
-  if(!props.show){
-
-    return null;
-  }
-    return(<div className="App">
-    <header className="App-header" >
-    <ButtonGroup size="large" aria-label="large outlined primary button group">
-    <Button onClick={() => window.location.reload(false)}>Start Over</Button>
-</ButtonGroup>
-    <img src={Logo} alt="" className="App-logo"/>
-    <div>{NestedGrid(grid_random)}
-    
+    <div className="App">
+   
+      <ToggleGameState gameState={gameState}
+                       setGameState={(state) => setGameState(state)} />
+      { gameState === GAME_STATE.IN_PROGRESS &&
+        <div>
+          <Board board={grid} />
+          <GuessInput allSolutions={allSolutions}
+                      foundSolutions={foundSolutions}
+                      correctAnswerCallback={(answer) => correctAnswerFound(answer)}/>
+          <FoundSolutions headerText="Solutions you've found" words={foundSolutions} />
+        </div>
+      }
+      { gameState === GAME_STATE.ENDED &&
+        <div>
+          <Board board={grid} />
+          <FoundSolutions headerText="All possible solutions" words={allSolutions} />
+        </div>
+      }
     </div>
-    <FormPropsTextFields />
-</header>
-</div>)
-  }
-  
- //Create Pa 
-class App extends React.Component { 
-  constructor(props) {
-    super(props)
-    this.state = {showGrid: false}
-    this.handleToggleClick = this.handleToggleClick.bind(this);
-  }
-  handleToggleClick(){
-    this.setState(prevState => ({
-      showGrid: !prevState.showGrid
-    }));
-  }
+  );
+}
 
-  //First page user sees to start game
-  render() { 
-    return(
-      <div>
-      <header className="App-header" >
-      <ShowGrid show= {this.state.showGrid}/>
-      <ButtonGroup size="large"  aria-label="large outlined primary button group">
-    <Button onClick={this.handleToggleClick}>  {this.state.showGrid ? 'Hide Board' : 'Start New Game / Show Board'}</Button>
-  </ButtonGroup>
- 
-  </header>
-      </div>
-    );
-    }
-  }
-
- 
 export default App;
-
