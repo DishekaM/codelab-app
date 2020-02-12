@@ -8,64 +8,62 @@ import Board from './Board.js';
 import GuessInput from './GuessInput.js';
 import FoundSolutions from './FoundSolutions.js';
 import ToggleGameState from './ToggleGameState.js';
-import {CHALLENGES_STATE} from './challenges_enum.js'
+import {CHALLENGES} from './challenges_enum.js'
 import './App.css';
 import LoginButton from './LoginButton.js';
 import {GAME_STATE} from './game_state_enum.js';
 import {RandomGrid} from './random_grid.js';
 import Logo from './logo2.svg';
-import {LoadChallenge} from './LoadChallenge.js'
+import LoadChallenge from './LoadChallenge.js'
 import Leaderboard from './Leaderboard.js'; 
-import {HighScores} from './HighScores.js';
+
 
 
 function App() {
-  var challenge_grid = LoadChallenge();
-  var allHighScores =  HighScores();
-
   const [user, setUser] = useState(null);
   const [allSolutions, setAllSolutions] = useState([]);
   const [foundSolutions, setFoundSolutions] = useState([]);
   const [gameState, setGameState] = useState(GAME_STATE.BEFORE);
   const [grid, setGrid] = useState([]);
-  const [high_score, setHighScore] = useState("");
-  const [challengeGame, setChallenge] = useState(CHALLENGES_STATE.CHALLENGE_1);
+  const [challengeState, setChallenge] = useState(CHALLENGES.CHALLENGE);
+  const [foundChallSolutions, setFoundChallSolutions] = useState([]);
 
-
+  // useEffect will trigger when the array items in the second argument are
+  // updated so whenever grid is updated, we will recompute the solutions
   useEffect(() => {
     const wordList = require('./full-wordlist.json');
     let tmpAllSolutions = findAllSolutions(grid, wordList.words);
+    window.solutions = tmpAllSolutions
     setAllSolutions(tmpAllSolutions);
+    let tmpAllSolutions2 = findAllSolutions(grid, wordList.words);
+    setFoundSolutions(tmpAllSolutions2)
+
   }, [grid]);
 
-//USE EFFECT TO SET AND LOAD THE "CHALLENGE GRID", RANDOM GRID AND SOLUTION
+  // This will run when gameState changes.
+  // When a new game is started, generate a new random grid and reset solutions
   useEffect(() => {
     if (gameState === GAME_STATE.IN_PROGRESS) {
+      if(window.setter === undefined){
       setGrid(RandomGrid());
       setFoundSolutions([]);
+      }
     }
-    else if (gameState === GAME_STATE.CHALLENGE_MODE) {
-      if(challengeGame === CHALLENGES_STATE.CHALLENGE_1){
-        setGrid(challenge_grid[0]);
-        setHighScore(allHighScores[0]);
-      }
-      else if(challengeGame === CHALLENGES_STATE.CHALLENGE_2){
-        setGrid(challenge_grid[1]);
-        setHighScore(allHighScores[1]);
-      }
-      else if(challengeGame === CHALLENGES_STATE.CHALLENGE_3){
-        setGrid(challenge_grid[2]);
-        setHighScore(allHighScores[2]);
-      }
-      setFoundSolutions([]);
+    
+  }, [gameState]);
+  //USE EFFECT TO SET AND LOAD THE "CHALLENGE GRID" AND SOLUTION
+  useEffect(() => {
+    if (challengeState === GAME_STATE.CHALLENGE) {
+      setChallenge(LoadChallenge());
+      setFoundChallSolutions([]);
     }
-  },[gameState, challengeGame]);
+  }, [challengeState])
 
   function correctAnswerFound(answer) {
     console.log("New correct answer:" + answer);
     setFoundSolutions([...foundSolutions, answer]);
   }
-
+  
   return (
     <div className="App">
     <header className="App-header">
@@ -78,8 +76,10 @@ function App() {
    </header>
       <ToggleGameState gameState={gameState}
                        setGameState={(state) => setGameState(state)}
-                       challengeGame={challengeGame} 
-                       setChallenge={(challengeGame) => setChallenge(challengeGame)} />
+                       challengeState={challengeState} 
+                       setChallenge={(challengeState) => setChallenge(challengeState)} />
+      <div position= 'absolute'>
+      </div>
 
       { gameState === GAME_STATE.IN_PROGRESS &&
         <div>
@@ -90,25 +90,11 @@ function App() {
             <GuessInput allSolutions={allSolutions}
                 foundSolutions={foundSolutions}
                 correctAnswerCallback={(answer) => correctAnswerFound(answer)}/>
-          <FoundSolutions headerText="Solutions you've found" words={foundSolutions} />
-        </div>
-      }
-
-      { gameState === GAME_STATE.CHALLENGE_MODE &&
-        <div>
-        <h1>Challenge Mode</h1>
-            <div>
-              <img src={Logo} alt="" className="App-logo" />
-              </div>
-          <Board board={grid} />
-          <GuessInput allSolutions={allSolutions}
-                      foundSolutions={foundSolutions}
-                      correctAnswerCallback={(answer) => correctAnswerFound(answer)}/>
-                      <p> High Score is: {high_score}</p>
-          <FoundSolutions headerText="Solutions you've found" words={foundSolutions} />
+          
         </div>
       }
        
+
       { gameState === GAME_STATE.ENDED &&
         <div>
           <div position= 'absolute'>
@@ -116,15 +102,13 @@ function App() {
           <div>
             <Leaderboard/>
           </div>
-          <FoundSolutions headerText="Solutions you've found" words={foundSolutions} />
           <FoundSolutions headerText="All possible solutions" words={allSolutions} />
-          
+          <FoundSolutions headerText="Solutions you've found" words={foundSolutions} />
           </div>
           </div>
       }
     </div>
   );
 }
-
 
 export default App;

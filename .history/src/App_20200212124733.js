@@ -16,19 +16,17 @@ import {RandomGrid} from './random_grid.js';
 import Logo from './logo2.svg';
 import {LoadChallenge} from './LoadChallenge.js'
 import Leaderboard from './Leaderboard.js'; 
-import {HighScores} from './HighScores.js';
+
 
 
 function App() {
   var challenge_grid = LoadChallenge();
-  var allHighScores =  HighScores();
 
   const [user, setUser] = useState(null);
   const [allSolutions, setAllSolutions] = useState([]);
   const [foundSolutions, setFoundSolutions] = useState([]);
   const [gameState, setGameState] = useState(GAME_STATE.BEFORE);
   const [grid, setGrid] = useState([]);
-  const [high_score, setHighScore] = useState("");
   const [challengeGame, setChallenge] = useState(CHALLENGES_STATE.CHALLENGE_1);
 
 
@@ -47,15 +45,15 @@ function App() {
     else if (gameState === GAME_STATE.CHALLENGE_MODE) {
       if(challengeGame === CHALLENGES_STATE.CHALLENGE_1){
         setGrid(challenge_grid[0]);
-        setHighScore(allHighScores[0]);
+        //setHighScore(allHighScores[0]);
       }
       else if(challengeGame === CHALLENGES_STATE.CHALLENGE_2){
         setGrid(challenge_grid[1]);
-        setHighScore(allHighScores[1]);
+        //setHighScore(allHighScores[1]);
       }
       else if(challengeGame === CHALLENGES_STATE.CHALLENGE_3){
         setGrid(challenge_grid[2]);
-        setHighScore(allHighScores[2]);
+        //setHighScore(allHighScores[2]);
       }
       setFoundSolutions([]);
     }
@@ -97,14 +95,11 @@ function App() {
       { gameState === GAME_STATE.CHALLENGE_MODE &&
         <div>
         <h1>Challenge Mode</h1>
-            <div>
-              <img src={Logo} alt="" className="App-logo" />
-              </div>
           <Board board={grid} />
           <GuessInput allSolutions={allSolutions}
                       foundSolutions={foundSolutions}
                       correctAnswerCallback={(answer) => correctAnswerFound(answer)}/>
-                      <p> High Score is: {high_score}</p>
+          
           <FoundSolutions headerText="Solutions you've found" words={foundSolutions} />
         </div>
       }

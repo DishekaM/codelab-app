@@ -102,9 +102,9 @@ function ToggleGameState({gameState, setGameState, challengeGame, setChallenge})
         onClose={handleClose}
       >
       <div id="menu">
-        <MenuItem onClick={() => updateGameState(true, CHALLENGES_STATE.CHALLENGE_1)}>Challenge 1 | High Score: 15 </MenuItem>
-        <MenuItem onClick={() => updateGameState(true, CHALLENGES_STATE.CHALLENGE_2)}>Challenge 2 | High Score: 10 </MenuItem>
-        <MenuItem onClick={() => updateGameState(true, CHALLENGES_STATE.CHALLENGE_3)}>Challenge 3 | High Score: 3 </MenuItem>
+        <MenuItem onClick={() => updateGameState(true, CHALLENGES_STATE.CHALLENGE_1)}>Challenge 1</MenuItem>
+        <MenuItem onClick={() => updateGameState(true, CHALLENGES_STATE.CHALLENGE_2)}>Challenge 2</MenuItem>
+        <MenuItem onClick={() => updateGameState(true, CHALLENGES_STATE.CHALLENGE_3)}>Challenge 3</MenuItem>
         </div>
       </StyledMenu>
     </div>

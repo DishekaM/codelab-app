@@ -104,7 +104,7 @@ function App() {
           <GuessInput allSolutions={allSolutions}
                       foundSolutions={foundSolutions}
                       correctAnswerCallback={(answer) => correctAnswerFound(answer)}/>
-                      <p> High Score is: {high_score}</p>
+                      <p> High Score is {high_score}</p>
           <FoundSolutions headerText="Solutions you've found" words={foundSolutions} />
         </div>
       }

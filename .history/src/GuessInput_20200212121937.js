@@ -9,10 +9,10 @@ function GuessInput({allSolutions, foundSolutions, correctAnswerCallback}) {
 
   function evaluateInput() {
     if (foundSolutions.includes(input)) {
-      setLabelText(input + " has already been found!");
-    } else if (allSolutions.includes(input)) {
       correctAnswerCallback(input);
       setLabelText(input + " is correct!");
+    } else if (allSolutions.includes(input)) {
+      setLabelText(input + " has already been found!");
     } else {
       setLabelText(input + " is incorrect!");
     }
